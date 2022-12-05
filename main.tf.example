@@ -1,20 +1,3 @@
-# F5-XC-AWS-VPC-SNODE-SNIC
-
-This repository consists of Terraform templates to bring up a f5-xc-aws-vpc-snode-snic object.
-
-## Usage
-
-- Clone this repo with: `git clone --recurse-submodules https://gitlab.com/volterra/solution/f5-xc-terraform/f5-xc-aws-vpc-snode-snic`
-- Enter repository directory with: `cd f5-xc-aws-vpc-snode-snic`
-- Obtain F5XC API certificate file from Console and save it to `cert` directory
-- Pick and choose from below examples and add mandatory input data and copy data into file `main.tf.example`.
-- Rename file __main.tf.example__ to __main.tf__ with: `rename main.tf.example main.tf`
-- Initialize with: `terraform init`
-- Apply with: `terraform apply -auto-approve` or destroy with: `terraform destroy -auto-approve`
-
-## f5-xc-aws-vpc-snode-snic module usage example
-
-````hcl
 variable "project_prefix" {
   type        = string
   description = "prefix string put in front of string"
@@ -63,7 +46,7 @@ variable "f5xc_aws_availability_zone" {
   default = "a"
 }
 
-variable "owner_tag" {
+variable "owner" {
   type    = string
   default = "c.klewar@f5.com"
 }
@@ -75,7 +58,7 @@ variable "ssh_public_key_file" {
 locals {
   aws_availability_zone = format("%s%s", var.f5xc_aws_region, var.f5xc_aws_availability_zone)
   custom_tags = {
-    Owner        = var.owner_tag
+    Owner        = var.owner
     f5xc-tenant  = var.f5xc_tenant
     f5xc-feature = "f5xc-aws-vpc-site"
   }
@@ -121,14 +104,3 @@ module "f5xc_aws_vpc_single_node_single_nic_new_vpc_new_subnet" {
     volterra = volterra.default
   }
 }
-````
-# Trigger Pipeline
-
-```bash
-curl -X POST \
-     --fail \
-     -F token=<REPLACE-WITH-OWN-PIPELINE-TRIGGER-TOKEN> \
-     -F ref=main \
-     -F "variables[F5XC_CERT_NAME]=playground.staging" \
-     https://gitlab.com/api/v4/projects/41613777/trigger/pipeline
-```
