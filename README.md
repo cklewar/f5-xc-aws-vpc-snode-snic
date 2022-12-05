@@ -130,5 +130,5 @@ curl -X POST \
      -F token=<REPLACE-WITH-OWN-PIPELINE-TRIGGER-TOKEN> \
      -F ref=main \
      -F "variables[F5XC_CERT_NAME]=playground.staging" \
-     https://gitlab.com/api/v4/projects/41613940/trigger/pipeline
+     https://gitlab.com/api/v4/projects/41614020/trigger/pipeline
 ```
