@@ -1,5 +1,5 @@
 name: f5-xc-aws-vpc-snode-snic
-on: push
+on: workflow_dispatch
 jobs:
   f5-xc-aws-vpc-snode-snic-module-validate:
     runs-on: ubuntu-latest

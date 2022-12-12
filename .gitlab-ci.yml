@@ -1,0 +1,147 @@
+stages:
+  - module-test
+  - module-validate
+  - module-plan
+  - module-apply
+  - module-regression
+  - module-destroy
+
+variables:
+  MODULE: f5-xc-aws-vpc-snode-snic
+  ARTIFACT_TAG: "${CI_COMMIT_SHA}"
+  BUILD_SHA: "${CI_COMMIT_SHA}"
+  BUILD_VERSION: "${CI_COMMIT_REF_SLUG}"
+  PROJECT_URL: "${CI_PROJECT_URL}"
+  F5XC_CERT_P12_FILE: "s3://f5-xc-terraform/secrets/certs/${F5XC_CERT_NAME}.api-creds.p12"
+  GIT_SUBMODULE_STRATEGY: recursive
+
+.base: &base
+  tags:
+    - kubernetes
+  cache:
+    policy: pull
+    key: "${CI_COMMIT_SHA}"
+  image: volterra.azurecr.io/ves.io/acmecorp-features:1.3.0
+  before_script:
+    - terraform version
+    - cd "${PROJECT}"
+    - aws s3 cp $F5XC_CERT_P12_FILE /
+    - |
+      export TF_VAR_gh_pat=${GH_PAT}
+      export TF_VAR_tf_token_app_terraform_io=${TF_TOKEN_APP_TERRAFORM_IO}
+      export TF_VAR_ves_p12_password=${VES_P12_PASSWORD}
+      export TF_VAR_f5xc_api_url=${F5XC_API_URL}
+      export TF_VAR_f5xc_api_p12_file_nfv=${F5XC_API_P12_FILE_NFV}
+      export TF_VAR_f5xc_api_p12_file=${F5XC_API_P12_FILE}
+      export TF_VAR_f5xc_tenant=${F5XC_TENANT}
+      export TF_VAR_f5xc_api_token=${F5XC_API_TOKEN}
+      export TF_VAR_aws_access_key_id=${AWS_ACCESS_KEY_ID}
+      export TF_VAR_aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}
+      export TF_VAR_ssh_private_key_file=${SSH_PRIVATE_KEY_FILE}
+      export TF_VAR_ssh_public_key_file=${SSH_PUBLIC_KEY_FILE}
+      
+    - terraform init
+
+# module - test
+module-test:
+  <<: *base
+  stage: module-test
+  rules:
+    # - if: $ACTION != "destroy" && $CI_PIPELINE_SOURCE == "trigger" && $CI_PIPELINE_TRIGGERED == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $CI_PIPELINE_TRIGGERED == "true"
+  script:
+    - |
+      for t in terraform/templates/"f5-xc-aws-vpc-snode-snic"/* terraform/templates/"f5-xc-aws-vpc-snode-snic"/*/*; do
+        echo "Testing ${MODULE} $(basename "$t") templates..."
+        [ -z "$(ls $t/*tf 2>/dev/null)" ] && continue
+        (cd "$t" && terraform init -backend-config=key="f5-xc-terraform/${MODULE}/test" -force-copy && terraform validate && terraform providers) || exit 1
+      done
+
+# module - validate
+module-validate:
+  <<: *base
+  stage: module-validate
+  rules:
+    # - if: $ACTION != "destroy" && $CI_PIPELINE_SOURCE == "trigger" && $CI_PIPELINE_TRIGGERED == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $CI_PIPELINE_TRIGGERED == "true"
+  variables:
+    TF_VAR_environment: $ENVIRONMENT
+  script:
+    - terraform validate
+  timeout: 1h30m
+  retry:
+    max: 1
+    when:
+      - script_failure
+      - stuck_or_timeout_failure
+      - runner_system_failure
+
+# module - plan
+module-plan:
+  <<: *base
+  stage: module-plan
+  rules:
+    # - if: $ACTION != "destroy" && $CI_PIPELINE_SOURCE == "trigger" && $CI_PIPELINE_TRIGGERED == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $CI_PIPELINE_TRIGGERED == "true"
+  script:
+    - terraform plan
+  timeout: 1h30m
+  retry:
+    max: 1
+    when:
+      - script_failure
+      - stuck_or_timeout_failure
+      - runner_system_failure
+
+# module - apply
+module-apply:
+  <<: *base
+  stage: module-apply
+  rules:
+    # - if: $ACTION != "destroy" && $CI_PIPELINE_SOURCE == "trigger" && $CI_PIPELINE_TRIGGERED == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $CI_PIPELINE_TRIGGERED == "true"
+  variables:
+    TF_VAR_environment: $ENVIRONMENT
+  script:
+    - terraform apply -auto-approve
+  timeout: 1h30m
+  retry:
+    max: 1
+    when:
+      - script_failure
+      - stuck_or_timeout_failure
+      - runner_system_failure
+
+# module - regression
+module-regression:
+  <<: *base
+  stage: module-regression
+  rules:
+    #- if: $ACTION == "regression" && $CI_PIPELINE_SOURCE == "trigger" && $CI_PIPELINE_TRIGGERED == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $CI_PIPELINE_TRIGGERED == "true"
+  script:
+    - echo "regression tests"
+  timeout: 1h30m
+  retry:
+    max: 1
+    when:
+      - script_failure
+      - stuck_or_timeout_failure
+      - runner_system_failure
+
+# module - destroy
+module-destroy:
+  <<: *base
+  stage: module-destroy
+  rules:
+    # - if: $ACTION == "destroy" && $CI_PIPELINE_SOURCE == "trigger" && $CI_PIPELINE_TRIGGERED == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $CI_PIPELINE_TRIGGERED == "true"
+  script:
+    - terraform destroy -auto-approve
+  timeout: 1h30m
+  retry:
+    max: 1
+    when:
+      - script_failure
+      - stuck_or_timeout_failure
+      - runner_system_failure

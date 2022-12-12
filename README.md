@@ -4,7 +4,7 @@ This repository consists of Terraform templates to bring up a f5-xc-aws-vpc-snod
 
 ## Usage
 
-- Clone this repo with: `git clone --recurse-submodules https://github.com/cklewar/f5-xc-aws-vpc-snode-snic`
+- Clone this repo with: `git clone --recurse-submodules https://gitlab.com/volterra/solution/f5-xc-terraform/f5-xc-aws-vpc-snode-snic`
 - Enter repository directory with: `cd f5-xc-aws-vpc-snode-snic`
 - Obtain F5XC API certificate file from Console and save it to `cert` directory
 - Pick and choose from below examples and add mandatory input data and copy data into file `main.tf.example`.
@@ -122,3 +122,13 @@ module "f5xc_aws_vpc_single_node_single_nic_new_vpc_new_subnet" {
   }
 }
 ````
+# Trigger Pipeline
+
+```bash
+curl -X POST \
+     --fail \
+     -F token=<REPLACE-WITH-OWN-PIPELINE-TRIGGER-TOKEN> \
+     -F ref=main \
+     -F "variables[F5XC_CERT_NAME]=playground.staging" \
+     https://gitlab.com/api/v4/projects/41614020/trigger/pipeline
+```
