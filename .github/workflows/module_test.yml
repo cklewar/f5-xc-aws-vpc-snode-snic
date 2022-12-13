@@ -1,4 +1,4 @@
-name: f5-xc-aws-vpc-snode-snic
+name: F5XC AWS VPC SNode SNIC module
 on: workflow_dispatch
 jobs:
   f5-xc-aws-vpc-snode-snic-module-validate:
