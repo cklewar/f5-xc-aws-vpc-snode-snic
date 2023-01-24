@@ -89,6 +89,7 @@ jobs:
       - name: Terraform Plan
         id: plan
         env:
+          TF_TOKEN_app_terraform_io: ${{ secrets.TF_TOKEN_APP_TERRAFORM_IO }}
           TF_VAR_f5xc_api_url: ${{ secrets.F5XC_API_URL }}
           TF_VAR_f5xc_api_p12_file_nfv: ${{ secrets.F5XC_API_P12_FILE_NFV }}
           TF_VAR_f5xc_api_p12_file: ${{ secrets.F5XC_API_P12_FILE }}
@@ -147,6 +148,7 @@ jobs:
       - name: Terraform Apply
         id: apply
         env:
+          TF_TOKEN_app_terraform_io: ${{ secrets.TF_TOKEN_APP_TERRAFORM_IO }}
           TF_VAR_f5xc_api_url: ${{ secrets.F5XC_API_URL }}
           TF_VAR_f5xc_api_p12_file_nfv: ${{ secrets.F5XC_API_P12_FILE_NFV }}
           TF_VAR_f5xc_api_p12_file: ${{ secrets.F5XC_API_P12_FILE }}
@@ -205,6 +207,7 @@ jobs:
       - name: Terraform Destroy
         id: destroy
         env:
+          TF_TOKEN_app_terraform_io: ${{ secrets.TF_TOKEN_APP_TERRAFORM_IO }}
           TF_VAR_f5xc_api_url: ${{ secrets.F5XC_API_URL }}
           TF_VAR_f5xc_api_p12_file_nfv: ${{ secrets.F5XC_API_P12_FILE_NFV }}
           TF_VAR_f5xc_api_p12_file: ${{ secrets.F5XC_API_P12_FILE }}
