@@ -46,6 +46,11 @@ variable "f5xc_aws_availability_zone" {
   default = "a"
 }
 
+variable "f5xc_aws_vpc_owner" {
+ type = string
+ default = "c.klewar@ves.io"
+}
+
 variable "owner" {
   type    = string
   default = "c.klewar@f5.com"
@@ -84,7 +89,7 @@ module "f5xc_aws_vpc_single_node_single_nic_new_vpc_new_subnet" {
   f5xc_tenant               = var.f5xc_tenant
   f5xc_aws_region           = var.f5xc_aws_region
   f5xc_aws_cred             = var.f5xc_aws_cred
-  f5xc_aws_vpc_owner        = var.owner
+  f5xc_aws_vpc_owner        = var.f5xc_aws_vpc_owner
   f5xc_aws_vpc_site_name    = format("%s-vpc-sn-snic-nvpc-nsnet-%s", var.project_prefix, var.project_suffix)
   f5xc_aws_vpc_primary_ipv4 = "192.168.168.0/21"
   f5xc_aws_ce_gw_type       = "single_nic"
