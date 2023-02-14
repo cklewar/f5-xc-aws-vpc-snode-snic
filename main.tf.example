@@ -80,7 +80,6 @@ provider "aws" {
   alias  = "us-east-2"
 }
 
-
 module "f5xc_aws_vpc_single_node_single_nic_new_vpc_new_subnet" {
   source                    = "./modules/f5xc/site/aws/vpc"
   f5xc_api_url              = var.f5xc_api_url
