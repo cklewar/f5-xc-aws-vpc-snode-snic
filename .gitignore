@@ -84,7 +84,7 @@ Temporary Items
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
-.idea
+
 
 # AWS User-specific
 .idea/**/aws.xml
@@ -433,3 +433,4 @@ ck.tfvars.json
 ck_gcp_creds.json
 ck.tf
 *.p12
+.terraform.lock.hcl
